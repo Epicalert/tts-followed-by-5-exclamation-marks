@@ -1,11 +1,18 @@
 import soundfile as sf
 import numpy as np
+import os
 
 inputString = "Eks\"ploU.ZIn"
 
-vowelList = ["E", "oU", "I"]
-consonantList = ["ks", "pl", "Z", "n"]
+
+consonantList = os.listdir("phonemes/consonant")
+consonantList = list(map(lambda item: item.replace(".ogg", ""), consonantList))
+
+vowelList = os.listdir("phonemes/end/stressed") + os.listdir("phonemes/end/unstressed") + os.listdir("phonemes/start/stressed") + os.listdir("phonemes/start/unstressed")
+vowelList = list(map(lambda item: item.replace(".ogg", ""), vowelList))
+
 combinedList = vowelList + consonantList
+
 
 def trimUntilInList(workingSyl):
     for i in range(len(workingSyl)):
