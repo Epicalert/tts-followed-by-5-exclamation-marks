@@ -1,9 +1,9 @@
 import soundfile as sf
 import numpy as np
 
-inputString = "eks.plOu.Zin"
+inputString = "Eks.ploU.ZIn"
 
-vowelList = ["e", "Ou", "i"]
+vowelList = ["E", "oU", "I"]
 consonantList = ["ks", "pl", "Z", "n"]
 combinedList = vowelList + consonantList
 
