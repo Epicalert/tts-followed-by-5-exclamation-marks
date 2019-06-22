@@ -27,17 +27,24 @@ def searchForFiles(syllable):
 
     return output
 
-def synthesizeSyllable(phonemeList):
+def synthesizeSyllable(phonemeList, stressed):
 
     firstDone = False
     for phoneme in phonemeList:
         path = ""
+
         if phoneme in consonantList:
             path = "consonant/"
-        elif firstDone:
-            path = "end/"
         else:
-            path = "start/"
+            if firstDone:
+                path = "end/"
+            else:
+                path = "start/"
+
+            if stressed:
+                path = path + "stressed/"
+            else:
+                path = path + "unstressed/"
 
         audiodata, samplerate = sf.read("phonemes/" +path +phoneme +".ogg")
 
@@ -53,11 +60,14 @@ def synthesizeSyllable(phonemeList):
 thisSyl = ""
 inputString = inputString + "."
 firstDone = False
+stressed = False
 for char in inputString:
     if char != ".":
         thisSyl = thisSyl + char
+    elif char == '\"':
+        stressed = True
     else:
-        sylAudio = synthesizeSyllable(searchForFiles(thisSyl))
+        sylAudio = synthesizeSyllable(searchForFiles(thisSyl), stressed)
 
         if firstDone:
             synthesizedOutput = np.concatenate((synthesizedOutput, sylAudio))
@@ -65,6 +75,7 @@ for char in inputString:
             synthesizedOutput = sylAudio
             firstDone = True
         
+        stressed = False
         thisSyl = ""
 
 sf.write("output.wav", synthesizedOutput, 96000)
