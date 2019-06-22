@@ -64,7 +64,8 @@ stressed = False
 for char in inputString:
     if char != "." and char != '"':
         thisSyl = thisSyl + char
-    else:
+    elif thisSyl != "":
+        
         sylAudio = synthesizeSyllable(searchForFiles(thisSyl), stressed)
 
         if firstDone:
