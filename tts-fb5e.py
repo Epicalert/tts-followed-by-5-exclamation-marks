@@ -31,7 +31,16 @@ def synthesizeSyllable(phonemeList):
 
     firstDone = False
     for phoneme in phonemeList:
-        audiodata, samplerate = sf.read("phonemes/" +phoneme +".ogg")
+        path = ""
+        if phoneme in consonantList:
+            path = "consonant/"
+        elif firstDone:
+            path = "end/"
+        else:
+            path = "start/"
+
+        audiodata, samplerate = sf.read("phonemes/" +path +phoneme +".ogg")
+
         if firstDone:
             outputFrames = np.concatenate((outputFrames, audiodata))
         else:
