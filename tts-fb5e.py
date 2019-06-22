@@ -1,4 +1,5 @@
 import soundfile as sf
+import numpy as np
 
 inputString = "eks.plOu.Zin"
 
@@ -24,12 +25,35 @@ def searchForFiles(syllable):
 
     return output
 
+def synthesizeSyllable(phonemeList):
+
+    firstDone = False
+    for phoneme in phonemeList:
+        audiodata, samplerate = sf.read("phonemes/" +phoneme +".ogg")
+        if firstDone:
+            outputFrames = np.concatenate((outputFrames, audiodata))
+        else:
+            outputFrames = audiodata
+            firstDone = True
+
+    return outputFrames
+
 
 thisSyl = ""
 inputString = inputString + "."
+firstDone = False
 for char in inputString:
     if char != ".":
         thisSyl = thisSyl + char
     else:
-        print(searchForFiles(thisSyl))
+        sylAudio = synthesizeSyllable(searchForFiles(thisSyl))
+
+        if firstDone:
+            synthesizedOutput = np.concatenate((synthesizedOutput, sylAudio))
+        else:
+            synthesizedOutput = sylAudio
+            firstDone = True
+        
         thisSyl = ""
+
+sf.write("output.wav", synthesizedOutput, 96000)
