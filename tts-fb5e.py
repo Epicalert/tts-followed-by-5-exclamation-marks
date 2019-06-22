@@ -3,12 +3,14 @@ import numpy as np
 
 inputString = "eks.plOu.Zin"
 
-fileList = ["e", "ks", "pl", "Ou", "Z", "i", "n"]
+vowelList = ["e", "Ou", "i"]
+consonantList = ["ks", "pl", "Z", "n"]
+combinedList = vowelList + consonantList
 
 def trimUntilInList(workingSyl):
     for i in range(len(workingSyl)):
-        if workingSyl in fileList:
-            return workingSyl
+        if workingSyl in combinedList:
+            return workingSyl 
         else:
             #trim one char off right of workingSyl
             workingSyl = workingSyl[:len(workingSyl) - 1]
