@@ -1,7 +1,7 @@
 import soundfile as sf
 import numpy as np
 
-inputString = "Eks.ploU.ZIn"
+inputString = "Eks\"ploU.ZIn"
 
 vowelList = ["E", "oU", "I"]
 consonantList = ["ks", "pl", "Z", "n"]
@@ -62,10 +62,8 @@ inputString = inputString + "."
 firstDone = False
 stressed = False
 for char in inputString:
-    if char != ".":
+    if char != "." and char != '"':
         thisSyl = thisSyl + char
-    elif char == '\"':
-        stressed = True
     else:
         sylAudio = synthesizeSyllable(searchForFiles(thisSyl), stressed)
 
@@ -77,5 +75,8 @@ for char in inputString:
         
         stressed = False
         thisSyl = ""
+
+    if char == '"':
+        stressed = True
 
 sf.write("output.wav", synthesizedOutput, 96000)
