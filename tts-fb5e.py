@@ -8,7 +8,7 @@ inputString = "Eks\"ploU.ZIn"
 consonantList = os.listdir("phonemes/consonant")
 consonantList = list(map(lambda item: item.replace(".ogg", ""), consonantList))
 
-vowelList = os.listdir("phonemes/end/stressed") + os.listdir("phonemes/end/unstressed") + os.listdir("phonemes/start/stressed") + os.listdir("phonemes/start/unstressed")
+vowelList = os.listdir("phonemes/stressed") + os.listdir("phonemes/unstressed")
 vowelList = list(map(lambda item: item.replace(".ogg", ""), vowelList))
 
 combinedList = vowelList + consonantList
@@ -43,11 +43,6 @@ def synthesizeSyllable(phonemeList, stressed):
         if phoneme in consonantList:
             path = "consonant/"
         else:
-            if firstDone:
-                path = "end/"
-            else:
-                path = "start/"
-
             if stressed:
                 path = path + "stressed/"
             else:
