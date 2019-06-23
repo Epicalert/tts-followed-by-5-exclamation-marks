@@ -1,9 +1,9 @@
 import soundfile as sf
 import numpy as np
 import os
+import sys
 
-inputString = "Eks\"ploU.ZIn"
-
+inputString = sys.argv[1]
 
 consonantList = os.listdir("phonemes/consonant")
 consonantList = list(map(lambda item: item.replace(".ogg", ""), consonantList))
