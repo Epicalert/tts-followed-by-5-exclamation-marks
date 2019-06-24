@@ -18,10 +18,14 @@ combinedList = vowelList + consonantList
 
 
 def trimUntilInList(workingSyl):
+    originalInput = workingSyl
     for i in range(len(workingSyl)):
         if workingSyl in combinedList:
             return workingSyl 
         else:
+            if len(workingSyl) == 1:
+                print("ERROR: could not resolve segment '" + originalInput + "'.")
+                sys.exit()
             #trim one char off right of workingSyl
             workingSyl = workingSyl[:len(workingSyl) - 1]
 
@@ -54,7 +58,13 @@ def synthesizeSyllable(phonemeList, stressed):
 
             firstVowelDone = True
 
-        audiodata, samplerate = sf.read("phonemes/" +path +phoneme +".ogg")
+        fullPath = "phonemes/" +path +phoneme +".ogg"
+
+        if os.path.isfile(fullPath):
+            audiodata, samplerate = sf.read(fullPath)
+        else:
+            print("ERROR: could not find " +fullPath)
+            sys.exit()
 
         if firstDone:
             outputFrames = np.concatenate((outputFrames, audiodata))
@@ -62,7 +72,7 @@ def synthesizeSyllable(phonemeList, stressed):
             outputFrames = audiodata
             firstDone = True
 
-    return outputFrames
+    return outputFrames, samplerate
 
 
 thisSyl = ""
@@ -74,7 +84,7 @@ for char in inputString:
         thisSyl = thisSyl + char
     elif thisSyl != "":
         
-        sylAudio = synthesizeSyllable(searchForFiles(thisSyl), stressed)
+        sylAudio, samplerate = synthesizeSyllable(searchForFiles(thisSyl), stressed)
 
         if firstDone:
             synthesizedOutput = np.concatenate((synthesizedOutput, sylAudio))
@@ -88,4 +98,4 @@ for char in inputString:
     if char == '"':
         stressed = True
 
-sf.write("output.wav", synthesizedOutput, 96000)
+sf.write("output.wav", synthesizedOutput, samplerate)
