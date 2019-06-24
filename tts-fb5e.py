@@ -4,6 +4,9 @@ import os
 import sys
 
 inputString = sys.argv[1]
+inputString = inputString.replace("%", "")    #TODO: add support for secondary stress
+inputString = inputString.replace(":", "")      #TODO: add support for syllable length
+inputString = inputString.replace(" ", "")
 
 consonantList = os.listdir("phonemes/consonant")
 consonantList = list(map(lambda item: item.replace(".ogg", ""), consonantList))
@@ -37,16 +40,19 @@ def searchForFiles(syllable):
 def synthesizeSyllable(phonemeList, stressed):
 
     firstDone = False
+    firstVowelDone = False
     for phoneme in phonemeList:
         path = ""
 
         if phoneme in consonantList:
             path = "consonant/"
         else:
-            if stressed:
+            if stressed and not firstVowelDone:
                 path = path + "stressed/"
             else:
                 path = path + "unstressed/"
+
+            firstVowelDone = True
 
         audiodata, samplerate = sf.read("phonemes/" +path +phoneme +".ogg")
 
