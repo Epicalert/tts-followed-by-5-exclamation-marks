@@ -25,8 +25,8 @@ def trimUntilInList(workingSyl, listToSearch):
             return workingSyl 
         else:
             if len(workingSyl) == 1:
-                print("ERROR: could not resolve segment '" + originalInput + "'.")
-                sys.exit()
+                print("TTS!!!!! ERROR: could not resolve segment '" + originalInput + "'.")
+                return " "
             #trim one char off right of workingSyl
             workingSyl = workingSyl[:len(workingSyl) - 1]
 
@@ -37,8 +37,10 @@ def searchForFiles(syllable, listToSearch):
 
     while len(workingSyl) > 0:
         result = trimUntilInList(workingSyl, listToSearch)
-        output = output + [result]
         workingSyl = workingSyl[len(result):]
+        result = result.replace(" ", "")
+        if len(result) > 0:
+            output = output + [result]
 
     return output
 
@@ -77,8 +79,8 @@ def synthesizeSyllable(phonemeList, stressed):
         if os.path.isfile(fullPath):
             audiodata, samplerate = sf.read(fullPath)
         else:
-            print("ERROR: could not find " +fullPath)
-            sys.exit()
+            print("TTS!!!!! ERROR: could not find " +fullPath)
+            continue
 
         if firstDone:
             outputFrames = np.concatenate((outputFrames, audiodata))
@@ -110,6 +112,7 @@ thisSyl = ""
 inputString = inputString + "."
 firstDone = False
 stressed = False
+synthesizedOutput = None
 for char in inputString:
     if char != "." and char != '"':
         thisSyl = thisSyl + char
@@ -129,4 +132,5 @@ for char in inputString:
     if char == '"':
         stressed = True
 
-sf.write("output.wav", synthesizedOutput, samplerate)
+if synthesizedOutput.any() != None:
+    sf.write("output.wav", synthesizedOutput, samplerate)
