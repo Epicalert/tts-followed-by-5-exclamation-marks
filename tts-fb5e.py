@@ -3,24 +3,25 @@ import numpy as np
 import os
 import sys
 
-inputString = sys.argv[1]
-inputString = inputString.replace("%", "")    #TODO: add support for secondary stress
-inputString = inputString.replace(":", "")      #TODO: add support for syllable length
-inputString = inputString.replace(" ", "")
+def buildDict(path):
+    dictFile = open(path)
 
-consonantList = os.listdir("phonemes/consonant")
-consonantList = list(map(lambda item: item.replace(".ogg", ""), consonantList))
+    outDict = {}
 
-vowelList = os.listdir("phonemes/stressed") + os.listdir("phonemes/unstressed")
-vowelList = list(map(lambda item: item.replace(".ogg", ""), vowelList))
+    for line in dictFile:
+        splitLine = line.split("\t")
+        splitPronunciations = splitLine[1].split(", ")
+        
+        outDict[splitLine[0].lower()] = splitPronunciations[0].replace("\n", "")
 
-combinedList = vowelList + consonantList
+    dictFile.close()
 
+    return outDict
 
-def trimUntilInList(workingSyl):
+def trimUntilInList(workingSyl, listToSearch):
     originalInput = workingSyl
     for i in range(len(workingSyl)):
-        if workingSyl in combinedList:
+        if workingSyl in listToSearch:
             return workingSyl 
         else:
             if len(workingSyl) == 1:
@@ -29,17 +30,30 @@ def trimUntilInList(workingSyl):
             #trim one char off right of workingSyl
             workingSyl = workingSyl[:len(workingSyl) - 1]
 
-def searchForFiles(syllable):
+def searchForFiles(syllable, listToSearch):
     output = []
 
     workingSyl = syllable
 
     while len(workingSyl) > 0:
-        result = trimUntilInList(workingSyl)
+        result = trimUntilInList(workingSyl, listToSearch)
         output = output + [result]
         workingSyl = workingSyl[len(result):]
 
     return output
+
+def getPronunciation(query):
+    words = query.split(" ")
+
+    pron = ""
+
+    for word in words:
+        subwords = searchForFiles(word, dictionary.keys()) #TODO: change the function name lol
+
+        for subword in subwords:
+            pron = pron + dictionary[subword]
+
+    return pron
 
 def synthesizeSyllable(phonemeList, stressed):
 
@@ -75,6 +89,23 @@ def synthesizeSyllable(phonemeList, stressed):
     return outputFrames, samplerate
 
 
+dictionary = buildDict("cmudict-0.7b-xsampa.txt")
+
+inputString = sys.argv[1]
+inputString = getPronunciation(inputString.lower())     #TODO: option for raw phoneme input
+inputString = inputString.replace("%", "")    #TODO: add support for secondary stress
+inputString = inputString.replace(":", "")      #TODO: add support for syllable length
+inputString = inputString.replace(" ", "")
+
+consonantList = os.listdir("phonemes/consonant")
+consonantList = list(map(lambda item: item.replace(".ogg", ""), consonantList))
+
+vowelList = os.listdir("phonemes/stressed") + os.listdir("phonemes/unstressed")
+vowelList = list(map(lambda item: item.replace(".ogg", ""), vowelList))
+
+combinedList = vowelList + consonantList
+
+
 thisSyl = ""
 inputString = inputString + "."
 firstDone = False
@@ -84,7 +115,7 @@ for char in inputString:
         thisSyl = thisSyl + char
     elif thisSyl != "":
         
-        sylAudio, samplerate = synthesizeSyllable(searchForFiles(thisSyl), stressed)
+        sylAudio, samplerate = synthesizeSyllable(searchForFiles(thisSyl, combinedList), stressed)
 
         if firstDone:
             synthesizedOutput = np.concatenate((synthesizedOutput, sylAudio))
