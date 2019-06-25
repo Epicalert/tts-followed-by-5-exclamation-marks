@@ -90,14 +90,41 @@ def synthesizeSyllable(phonemeList, stressed):
 
     return outputFrames, samplerate
 
+def runTTS(inputString):
+    inputString = getPronunciation(inputString.lower())     #TODO: option for raw phoneme input
+    inputString = inputString.replace("%", "")    #TODO: add support for secondary stress
+    inputString = inputString.replace(":", "")      #TODO: add support for syllable length
+    inputString = inputString.replace(" ", "")
+
+    thisSyl = ""
+    inputString = inputString + "."
+    firstDone = False
+    stressed = False
+    synthesizedOutput = None
+    for char in inputString:
+        if char != "." and char != '"':
+            thisSyl = thisSyl + char
+        elif thisSyl != "":
+
+            sylAudio, samplerate = synthesizeSyllable(searchForFiles(thisSyl, combinedList), stressed)
+
+            if firstDone:
+                synthesizedOutput = np.concatenate((synthesizedOutput, sylAudio))
+            else:
+                synthesizedOutput = sylAudio
+                firstDone = True
+
+            stressed = False
+            thisSyl = ""
+
+        if char == '"':
+            stressed = True
+
+    if synthesizedOutput.any() != None:
+        sf.write("output.wav", synthesizedOutput, samplerate)
+
 
 dictionary = buildDict("cmudict-0.7b-xsampa.txt")
-
-inputString = sys.argv[1]
-inputString = getPronunciation(inputString.lower())     #TODO: option for raw phoneme input
-inputString = inputString.replace("%", "")    #TODO: add support for secondary stress
-inputString = inputString.replace(":", "")      #TODO: add support for syllable length
-inputString = inputString.replace(" ", "")
 
 consonantList = os.listdir("phonemes/consonant")
 consonantList = list(map(lambda item: item.replace(".ogg", ""), consonantList))
@@ -107,30 +134,8 @@ vowelList = list(map(lambda item: item.replace(".ogg", ""), vowelList))
 
 combinedList = vowelList + consonantList
 
+print("TTS!!!! initialized")
 
-thisSyl = ""
-inputString = inputString + "."
-firstDone = False
-stressed = False
-synthesizedOutput = None
-for char in inputString:
-    if char != "." and char != '"':
-        thisSyl = thisSyl + char
-    elif thisSyl != "":
-        
-        sylAudio, samplerate = synthesizeSyllable(searchForFiles(thisSyl, combinedList), stressed)
-
-        if firstDone:
-            synthesizedOutput = np.concatenate((synthesizedOutput, sylAudio))
-        else:
-            synthesizedOutput = sylAudio
-            firstDone = True
-        
-        stressed = False
-        thisSyl = ""
-
-    if char == '"':
-        stressed = True
-
-if synthesizedOutput.any() != None:
-    sf.write("output.wav", synthesizedOutput, samplerate)
+if __name__ == "__main__":
+    inputString = sys.argv[1]
+    runTTS(inputString)
