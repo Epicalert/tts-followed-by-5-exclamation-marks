@@ -6,6 +6,8 @@ import sys
 
 pathprefix = path.dirname(__file__)
 
+print(__file__)
+
 if pathprefix != "":
     pathprefix = pathprefix + "/"
 
@@ -68,7 +70,7 @@ def synthesizeSyllable(phonemeList, stressed):
     firstDone = False
     firstVowelDone = False
     for phoneme in phonemeList:
-        path = pathprefix
+        path = ""
 
         if phoneme in consonantList:
             path = "consonant/"
@@ -80,7 +82,7 @@ def synthesizeSyllable(phonemeList, stressed):
 
             firstVowelDone = True
 
-        fullPath = "phonemes/" +path +phoneme +".ogg"
+        fullPath = pathprefix +"phonemes/" +path +phoneme +".ogg"
 
         if os.path.isfile(fullPath):
             audiodata, samplerate = sf.read(fullPath)
@@ -130,7 +132,7 @@ def runTTS(inputString):
         sf.write("output.wav", synthesizedOutput, samplerate)
 
 
-dictionary = buildDict("cmudict-0.7b-xsampa.txt")
+dictionary = buildDict(pathprefix +"cmudict-0.7b-xsampa.txt")
 
 consonantList = os.listdir(pathprefix +"phonemes/consonant")
 consonantList = list(map(lambda item: item.replace(".ogg", ""), consonantList))
