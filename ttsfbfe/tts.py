@@ -1,7 +1,10 @@
 import soundfile as sf
 import numpy as np
 import os
+from os import path
 import sys
+
+pathprefix = path.dirname(__file__) + "/"
 
 def buildDict(path):
     dictFile = open(path)
@@ -62,7 +65,7 @@ def synthesizeSyllable(phonemeList, stressed):
     firstDone = False
     firstVowelDone = False
     for phoneme in phonemeList:
-        path = ""
+        path = pathprefix
 
         if phoneme in consonantList:
             path = "consonant/"
@@ -126,10 +129,10 @@ def runTTS(inputString):
 
 dictionary = buildDict("cmudict-0.7b-xsampa.txt")
 
-consonantList = os.listdir("phonemes/consonant")
+consonantList = os.listdir(pathprefix +"phonemes/consonant")
 consonantList = list(map(lambda item: item.replace(".ogg", ""), consonantList))
 
-vowelList = os.listdir("phonemes/stressed") + os.listdir("phonemes/unstressed")
+vowelList = os.listdir(pathprefix +"phonemes/stressed") + os.listdir(pathprefix +"phonemes/unstressed")
 vowelList = list(map(lambda item: item.replace(".ogg", ""), vowelList))
 
 combinedList = vowelList + consonantList
