@@ -4,7 +4,10 @@ import os
 from os import path
 import sys
 
-pathprefix = path.dirname(__file__) + "/"
+pathprefix = path.dirname(__file__)
+
+if pathprefix != "":
+    pathprefix = pathprefix + "/"
 
 def buildDict(path):
     dictFile = open(path)
