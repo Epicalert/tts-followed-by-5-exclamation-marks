@@ -98,8 +98,8 @@ def synthesizeSyllable(phonemeList, stressed):
 
     return outputFrames, samplerate
 
-def runTTS(inputString):
-    inputString = getPronunciation(inputString.lower())     #TODO: option for raw phoneme input
+def runTTS(query):
+    inputString = getPronunciation(query.lower())     #TODO: option for raw phoneme input
     inputString = inputString.replace("%", "")    #TODO: add support for secondary stress
     inputString = inputString.replace(":", "")      #TODO: add support for syllable length
     inputString = inputString.replace(" ", "")
@@ -133,6 +133,8 @@ def runTTS(inputString):
 
 
 dictionary = buildDict(pathprefix +"cmudict-0.7b-xsampa.txt")
+
+#TODO: load phonemes from zip file because WINDOWS CAN'T TELL THE DIFFERENCE BETWEEN UPPERCASE AND LOWERCASE FILENAMES >:CCCC
 
 consonantList = os.listdir(pathprefix +"phonemes/consonant")
 consonantList = list(map(lambda item: item.replace(".ogg", ""), consonantList))
